@@ -62,6 +62,10 @@ const Profile: React.FC = () => {
         navigate('/change-password');
     };
 
+    const handleBackToForum = () => {
+        navigate('/forum');
+    };
+
     if (error) {
         return (
             <Box maxWidth="400px" margin="auto" padding="20px">
@@ -92,6 +96,9 @@ const Profile: React.FC = () => {
             </Button>
             <Button colorScheme="red" width="100%" mt={4} onClick={handleLogout}>
                 Kilépés
+            </Button>
+            <Button colorScheme="teal" width="100%" mt={4} onClick={handleBackToForum}>
+                Vissza a fórumra
             </Button>
         </Box>
     );

@@ -1,8 +1,14 @@
+// src/LoginForm.tsx
 import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
-import { Button, ButtonGroup } from '@chakra-ui/react';
+import LoginFormView from './LoginFormView';
+
+interface FormValues {
+    username: string;
+    password: string;
+}
 
 const LoginForm: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
@@ -11,7 +17,7 @@ const LoginForm: React.FC = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            navigate('/profile');
+            navigate('/forum');
         }
     }, [navigate]);
 
@@ -24,7 +30,7 @@ const LoginForm: React.FC = () => {
             .required('Kötelező mező'),
     });
 
-    const formik = useFormik({
+    const formik = useFormik<FormValues>({
         initialValues: {
             username: '',
             password: '',
@@ -44,7 +50,7 @@ const LoginForm: React.FC = () => {
                 if (response.ok) {
                     const data = await response.json();
                     localStorage.setItem('token', data.accessToken);
-                    navigate('/profile');
+                    navigate('/forum');
                 } else {
                     const errorData = await response.json();
                     switch (response.status) {
@@ -66,50 +72,7 @@ const LoginForm: React.FC = () => {
         },
     });
 
-    return (
-        <div style={{ maxWidth: '400px', margin: 'auto', padding: '20px', border: '1px solid #ccc', borderRadius: '5px' }}>
-            <h2 style={{ textAlign: 'center' }}>Belépés</h2>
-            <form onSubmit={formik.handleSubmit}>
-                <div style={{ marginBottom: '15px' }}>
-                    <input
-                        type="email"
-                        name="username"
-                        placeholder="Felhasználónév"
-                        value={formik.values.username}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc', color: 'black', backgroundColor: '#e0e0e0' }}
-                    />
-                    {formik.touched.username && formik.errors.username && (
-                        <div style={{ color: 'red' }}>{formik.errors.username}</div>
-                    )}
-                </div>
-                <div style={{ marginBottom: '15px' }}>
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Jelszó"
-                        value={formik.values.password}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc', color: 'black', backgroundColor: '#e0e0e0' }}
-                    />
-                    {formik.touched.password && formik.errors.password && (
-                        <div style={{ color: 'red' }}>{formik.errors.password}</div>
-                    )}
-                </div>
-                {error && <p style={{ color: 'red', textAlign: 'center', marginTop: '10px' }}>{error}</p>}
-                <ButtonGroup>
-                    <Button type="submit" colorScheme="green" width="100%" isDisabled={!formik.isValid || formik.isSubmitting}>
-                        Belépés
-                    </Button>
-                </ButtonGroup>
-                <p style={{ textAlign: 'center', marginTop: '10px' }}>
-                    Nincs fiókod? <a href="/register">Regisztráció</a>
-                </p>
-            </form>
-        </div>
-    );
+    return <LoginFormView formik={formik} error={error} loading={formik.isSubmitting} />;
 };
 
 export default LoginForm;
